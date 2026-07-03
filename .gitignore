@@ -1,0 +1,11 @@
+# data files
+research/data/*.npy
+research/data/*.fits
+research/models/*.pt
+
+# env
+.env
+.env.local
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
