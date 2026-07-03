@@ -1,0 +1,22 @@
+Goal: Understand the data before touching any model.
+The Kepler space telescope observed ~200,000 stars continuously for 4 years, measuring their brightness every 30 minutes. 
+When the pipeline detected a repeated dimming pattern in a star it flagged it as a Threshold Crossing Event (TCE) — a candidate that might be a planet.
+There are 34,032 such TCEs in the DR25 catalog.
+
+The problem is most TCEs aren't real planets. They're caused by eclipsing binary stars, instrumental noise, or background contamination. 
+NASA's robovetter — a rule-based C++ classifier — went through every TCE and labeled it either PC (Planet Candidate) or FP (False Positive).
+Of 32,534 TCEs with robovetter labels, only 4,037 are planet candidates. The rest are false positives. That 7:1 imbalance is the central challenge of the classification problem.
+
+I sourced data from two separate places and merged them. The TCE catalog from the NASA Exoplanet Archive TAP API gave the features for each event:
+orbital period, transit duration, transit depth, and signal-to-noise ratio. 
+The robovetter output file from the NASA GitHub gave us the labels. Neither source alone was sufficient — the catalog had no labels and the robovetter file had no features.
+I merged them on kepid + tce_plnt_num together because a single star can have multiple TCEs and you need both IDs to uniquely identify one event.
+
+To handle the class imbalance cleanly during EDA and early training,I created a balanced subset of 8,074 TCEs — all 4,037 planet candidates plus 4,037 randomly sampled false positives.
+I then fetched real lightcurves from NASA MAST using lightkurve and applied the core preprocessing insight of the project: phase folding.
+By folding KIC 5629538's 4-year lightcurve on its 15.19-day period and binning to 200 points,it produced a clean array showing a sharp central dip — a planet transiting its star. 
+Comparing this to a false positive (KIC 5479800) showed visually why this is a non-trivial classification problem:
+real transits have a consistent symmetric dip, false positives show irregular or chaotic patterns with no clear signal.
+
+The 200-point phase-folded binned array is the input format every star in the dataset will be converted to in Week 2.
+Each array represents one TCE's transit shape, and the CNN's job is to learn which shapes correspond to real planets.
