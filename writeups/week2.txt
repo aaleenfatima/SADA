@@ -1,0 +1,26 @@
+Goal: Build a preprocessing pipeline that converts all 8,074 TCEs into clean, model-ready numpy arrays and saves them to disk permanently.
+
+started by fixing a data gap from Week 1 — the TCE catalog we fetched originally didn't include the epoch column tce_time0bk.
+The epoch is the timestamp of the first known transit center for each TCE. Without it, phase folding uses an arbitrary reference point and
+the transit dip lands off-center in the 200-point array. I re-fetched the catalog with this column included and merged it into the balanced dataframe.
+
+then built the preprocess_lightcurve() function — the core preprocessing unit of the entire project. For any given star it does
+five things in sequence: fetches all quarterly lightcurve files from NASA MAST, stitches them into one 4-year time series,
+removes outlier spikes via sigma clipping at 3 standard deviations, phase folds on the TCE period anchored to the correct epoch 
+so the transit always lands at bin 100, bins to exactly 200 points, and z-score normalizes so all stars are on the same scale. 
+
+If anything fails at any step the function returns None and that star is skipped rather than corrupting the dataset.
+
+Two bugs were caught and fixed during testing. First, the bins parameter name — lightkurve's newer version deprecated n_bins in favor
+of bins for FoldedLightCurve objects. Second, the flux returned by lightkurve is an Astropy MaskedNDArray rather than a plain numpy array.
+np.save() has no implementation for this type and raises a TypeError. The fix is calling .filled(fill_value=np.nan) to convert it to a plain numpy array before saving.
+
+confirmed the function works correctly on KIC 5629538 — the output was a (200,) array with mean ~0 and std ~1, and the transit dip
+visually centered at bin 100, confirming the epoch correction worked.
+
+then launched the full processing loop across all 8,074 stars. The loop saves each processed star as a
+.npy file named {kepid}_{planet_num}_{disposition}.npy to Google Drive, so the disposition label is encoded directly in the filename.
+
+The loop is resumable — it checks whether each file already exists before processing, so a Colab disconnection doesn't mean starting from scratch. 
+Failed stars are tracked separately and saved as failed_kepids.npy for inspection.
+After the loop completes the remaining Week 2 tasks are verifying the saved files load correctly and building the PyTorch KeplerDataset class that will serve (flux, label) pairs to the model in Week 3.
