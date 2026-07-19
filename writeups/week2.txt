@@ -24,3 +24,10 @@ then launched the full processing loop across all 8,074 stars. The loop saves ea
 The loop is resumable — it checks whether each file already exists before processing, so a Colab disconnection doesn't mean starting from scratch. 
 Failed stars are tracked separately and saved as failed_kepids.npy for inspection.
 After the loop completes the remaining Week 2 tasks are verifying the saved files load correctly and building the PyTorch KeplerDataset class that will serve (flux, label) pairs to the model in Week 3.
+
+breif:
+A preprocessing pipeline that converts raw NASA lightcurves into normalized 200-point arrays
+4,515 verified .npy files saved to Google Drive
+A PyTorch KeplerDataset class that loads files on demand
+Three DataLoaders ready to feed batches to your CNN
+Train/val/test splits with stratification
