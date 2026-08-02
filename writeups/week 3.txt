@@ -1,0 +1,12 @@
+Mounted Google Drive, loaded balanced_tce.csv and confirmed the .npy folder — no re-fetching from Kepler
+Listed all .npy files, parsed kepid, tce_plnt_num, and label (PC/FP) out of each filename using regex
+Merged that parsed index with balanced_tce.csv on kepid + tce_plnt_num, so every row now has both catalog stats and a path to its flux array
+Checked that filename-derived labels matched the disposition column — sanity check before trusting the join
+Dropped rows missing any BLS stat (tce_period, tce_duration, tce_depth, tce_model_snr)
+Wrote a function to load each flux array and compute 9 new features from it (mean, std, min, max, depth estimate, in/out-transit std, skew, kurtosis)
+Defined 3 feature sets: BLS-only (4 cols), BLS+flux (13 cols), BLS+flux+robovetter (14 cols)
+Split data 70/15/15 (stratified, seed 42) — same seed as the CNN dataloader so splits stay comparable
+Trained 3 models: Logistic Regression on BLS-only, Random Forest on BLS+flux, Random Forest on BLS+flux+robovetter
+Evaluated each on accuracy, precision, recall, F1, ROC-AUC, confusion matrix
+Plotted RF_main's feature importances
+Saved all results to model_results.csv in Drive for tracking across weeks
