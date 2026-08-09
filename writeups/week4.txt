@@ -1,0 +1,28 @@
+1. Designed a 1D CNN in PyTorch: 3 conv blocks (8→16→32 filters) with BatchNorm, ReLU, MaxPool, Dropout after each, followed by Global Average Pooling 
+instead of Flatten, chosen specifically to keep parameter count low relative to the ~3,160 training examples
+
+2. Sized the architecture deliberately small (3,953 params, ratio ≈1.25 to training examples) after checking that an initial 16/32/64-filter version 
+(15,329 params) was disproportionately large for the dataset
+
+3. Rebuilt the exact same 70/15/15 stratified split (seed 42) from Week 3, so the CNN's test set is identical to BLS_baseline and RF_main's
+ as it is required for a valid cross-model comparison
+
+4. Trained with `BCEWithLogitsLoss` + AdamW (weight decay) + early stopping on validation loss (patience 8, max 60 epochs),
+ three independent regularizers given the small dataset
+
+5. Fixed a major slowdown: initial training was bottlenecked by per-sample Google Drive reads every epoch; fixed by preloading all flux arrays 
+into memory once before training
+
+6. Evaluated on the held-out test set: 81.0% accuracy, F1 = 0.822, ROC-AUC = 0.887 — behind RF_main (89.4% / 0.897 / 0.951) but clearly 
+above BLS_baseline (70.2% / 0.755 / 0.731)
+
+7. Ran 5-fold stratified cross-validation across all four models to check whether the RF vs CNN gap was real or an artifact 
+of one split, confirmed it's real and stable (CNN F1 = 0.818 ± 0.013 vs RF_main F1 = 0.904 ± 0.012 across folds, a gap ~6-7x larger
+ than either model's own variance)
+
+8. Tested one ablation: per-sample adaptive Gaussian noise augmentation on training data only (`noise_std = 0.3 × sample flux std`),
+ re-sampled every epoch. Result: augmentation slightly hurt performance across every metric (F1 0.812 → 0.787, AUC 0.888 → 0.870)
+  likely because the noise level was large enough to partially wash out real transit-shape signal
+
+**Where this leaves the paper:** a complete, honestly-reported four-model comparison (BLS → CNN → RF → RF+robovetter) with cross-validated variance
+ estimates and one tested (negative) augmentation result 
