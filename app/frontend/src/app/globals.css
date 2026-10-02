@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-sans: "Barlow", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  /* Surfaces: deep space, instrument deck, and the rules between them */
+  --color-space: #050a14;
+  --color-deck: #0a1322;
+  --color-deck-hi: #0f1b31;
+  --color-rule: #1a2b4d;
+  --color-rule-hi: #2c4675;
+
+  /* Brand blue for fills, lighter signal blue for data and focus */
+  --color-nasa: #0b3d91;
+  --color-nasa-hi: #1556c0;
+  --color-signal: #5fb4ff;
+
+  /* Text */
+  --color-paper: #eef3fb;
+  --color-dim: #8fa0c0;
+  --color-faint: #4c5f85;
+
+  /* Decision states */
+  --color-go: #35d08f;
+  --color-hold: #ffb224;
+  --color-stop: #fc3d21;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-space);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-nasa);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rule-hi) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
