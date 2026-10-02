@@ -2,7 +2,9 @@
 research/data/*.npy
 research/data/*.fits
 research/models/*.pt
-
+research/models/*.joblib
+app/backend/models/*.pt
+app/backend/models/*.joblib
 # env
 .env
 .env.local

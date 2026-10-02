@@ -1,0 +1,19 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+numpy>=1.26
+astropy>=6.0
+lightkurve>=2.4
+torch>=2.2
+# Pinned exactly, not >=, to match the version the deployed RF_main.joblib was
+# actually pickled with (confirmed via the InconsistentVersionWarning a
+# >=1.4-constrained install produced: Colab trained on 1.6.1, a fresh venv
+# installed 1.9.1). Sklearn gives no cross-version unpickling guarantee for
+# tree ensembles -- this isn't a cosmetic warning, a future sklearn release
+# could silently change internal tree attributes and break or corrupt loading.
+# If you retrain RF_main in Colab, check Colab's `sklearn.__version__` and
+# update this pin to match before re-exporting.
+scikit-learn==1.6.1
+joblib>=1.3
+httpx>=0.27
+python-dotenv>=1.0
