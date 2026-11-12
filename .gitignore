@@ -1,5 +1,6 @@
 # data files
 research/data/*.npy
+research/data/processed/
 research/data/*.fits
 research/models/*.pt
 research/models/*.joblib
@@ -11,3 +12,23 @@ app/backend/models/*.joblib
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+# paper source stays local; only the final PDF is published
+paper/
+SADA_paper_v3*.zip
+
+# run logs and smoke-test output
+research/results/log_*.txt
+research/results_smoke/
+
+# editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# python envs
+.venv/
+venv/
+*.egg-info/
+
+# paper-asset generator stays local with the paper source
+research/make_paper_assets.py
